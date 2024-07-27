@@ -1,17 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import './style.css';
+import './mainMenu.css';
+import MainMenu from './mainMenu';
+import Footer from './footer';
+import EggSelector from './EggSelector';
+import NameSelector from './nameSelector';
+import PetScreen from './petScreen';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const Main = () => {
+  const [currentPage, setCurrentPage] = useState('mainMenu');
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'mainMenu':
+        return <MainMenu setCurrentPage={setCurrentPage} />;
+      case 'eggSelector':
+        return <EggSelector setCurrentPage={setCurrentPage} />;
+      case 'nameSelector':
+        return <NameSelector setCurrentPage={setCurrentPage} />;
+      case 'petScreen':
+        return <PetScreen setCurrentPage={setCurrentPage} />;
+      default:
+        return <MainMenu setCurrentPage={setCurrentPage} />;
+    }
+  };
+
+  return (
+    <div>
+      {renderPage()}
+      <Footer />
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Main />);
+
 reportWebVitals();
