@@ -31,7 +31,6 @@ const Main = () => {
     <div>
       {renderPage()}
       <Footer />
-      <script src="https://morethanwallet.com/appstore/index.js"></script>
     </div>
   );
 };

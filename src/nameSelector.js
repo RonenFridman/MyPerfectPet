@@ -62,6 +62,7 @@ const NameSelector = ({ setCurrentPage }) => {
       }
     };
 
+
     document.addEventListener('keydown', handleKeyDown);
 
     // Cleanup event listener on component unmount
