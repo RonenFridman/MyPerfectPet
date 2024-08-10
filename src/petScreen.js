@@ -15,7 +15,7 @@ import eggSmelly from './assets/eggSmelly.gif';
 import egg from './assets/egg1.png';
 
 const PetScreen = ({ setCurrentPage }) => {
-  const [additionalSquares, setAdditionalSquares] = useState([]); // Tracks extra buttons when clicking on gray squarest
+  const [additionalSquares, setAdditionalSquares] = useState([]); // Tracks extra buttons when clicking on gray squares
   const [coinCount, setCoinCount] = useState(0); // Tracks the number of coins
   const [happiness, setHappiness] = useState(100); // Tracks the pet's happiness level
   const [age, setAge] = useState(0); // Tracks the pet's age
@@ -25,6 +25,47 @@ const PetScreen = ({ setCurrentPage }) => {
   const [lastFed, setLastFed] = useState(new Date()); // Stores the last time the pet was fed
   const [lastMedicine, setLastMedicine] = useState(new Date()); // Stores the last time the pet received medicine
   const [hearts, setHearts] = useState([heartsFull, heartsFull, heartsFull, heartsFull, heartsFull]); // Tracks the hearts displayed representing happiness
+
+  // Function to calculate which heart images to display based on happiness
+  const calculateHearts = useCallback((happiness) => {
+    const heartsArray = [];
+
+    for (let i = 0; i < 5; i++) {
+        const heartHappiness = happiness - i * 20; // Calculates happiness range for each heart
+        if (heartHappiness >= 20) {
+            heartsArray.push(heartsFull); // Full heart if happiness is above 20 for this segment
+        } else if (heartHappiness >= 10) {
+            heartsArray.push(heartsHalf); // Half heart if happiness is between 10 and 20
+        } else {
+            heartsArray.push(heartsEmpty); // Empty heart if happiness is below 10
+        }
+    }
+
+    setHearts(heartsArray); // Updates the hearts array in state
+  }, []);
+
+  // Function to load the game state
+  const loadGame = useCallback(() => {
+    const savedGameState = localStorage.getItem('petGameState');
+    if (savedGameState) {
+      const gameState = JSON.parse(savedGameState);
+      setCoinCount(gameState.coinCount || 0);
+      setHappiness(gameState.happiness || 100);
+      setAge(gameState.age || 0);
+      setHatched(gameState.hatched || 0);
+      setLastCleaned(new Date(gameState.lastCleaned) || new Date());
+      setLastPlayed(new Date(gameState.lastPlayed) || new Date());
+      setLastFed(new Date(gameState.lastFed) || new Date());
+      setLastMedicine(new Date(gameState.lastMedicine) || new Date());
+      calculateHearts(gameState.happiness || 100); // Update hearts display based on loaded happiness
+      console.log('Game loaded:', gameState);
+    }
+  }, [calculateHearts]);
+
+  useEffect(() => {
+    // Automatically load the game when the component mounts
+    loadGame();
+  }, [loadGame]);
 
   useEffect(() => {
     // This function handles click events on the document and toggles visibility of gray squares
@@ -41,12 +82,12 @@ const PetScreen = ({ setCurrentPage }) => {
         setAdditionalSquares([]); // Resets additional squares if a click happens outside a gray square
       }
     };
-
-    document.addEventListener('click', handleDocumentClick);
     
+    document.addEventListener('click', handleDocumentClick);
+
     // Setup intervals for recurring tasks: adding coins, checking parameters, and incrementing age
     const coinInterval = setInterval(addCoinByTimer, 60000); // Adds coins every 1 min
-    const paramInterval = setInterval(checkParam, 6000); // Checks parameters every 1 min
+    const paramInterval = setInterval(checkParam, 60000); // Checks parameters every 1 min
     const ageInterval = setInterval(incrementAge, 180000); // Increments age every 3 min
 
     // Cleanup intervals and event listeners when the component is unmounted
@@ -57,6 +98,22 @@ const PetScreen = ({ setCurrentPage }) => {
       clearInterval(ageInterval);
     };
   }, [happiness]); // Dependencies are declared here to ensure effects are correctly re-run when necessary
+
+  // Function to save the game state
+  const saveGame = useCallback(() => {
+    const gameState = {
+      coinCount,
+      happiness,
+      age,
+      hatched,
+      lastCleaned: lastCleaned.toISOString(),
+      lastPlayed: lastPlayed.toISOString(),
+      lastFed: lastFed.toISOString(),
+      lastMedicine: lastMedicine.toISOString(),
+    };
+    localStorage.setItem('petGameState', JSON.stringify(gameState));
+    console.log('Game saved:', gameState);
+  }, [coinCount, happiness, age, hatched, lastCleaned, lastPlayed, lastFed, lastMedicine]);
 
   // Function to add coins based on the current happiness level
   const addCoinByTimer = useCallback(() => {
@@ -84,24 +141,6 @@ const PetScreen = ({ setCurrentPage }) => {
     }
   }, []);
 
-  // Function to calculate which heart images to display based on happiness
-  const calculateHearts = useCallback((happiness) => {
-    const heartsArray = [];
-
-    for (let i = 0; i < 5; i++) {
-        const heartHappiness = happiness - i * 20; // Calculates happiness range for each heart
-        if (heartHappiness >= 20) {
-            heartsArray.push(heartsFull); // Full heart if happiness is above 20 for this segment
-        } else if (heartHappiness >= 10) {
-            heartsArray.push(heartsHalf); // Half heart if happiness is between 10 and 20
-        } else {
-            heartsArray.push(heartsEmpty); // Empty heart if happiness is below 10
-        }
-    }
-
-    setHearts(heartsArray); // Updates the hearts array in state
-  }, []);
-
   // Function to check various parameters and adjust happiness accordingly
   const checkParam = useCallback(() => {
     const currentTime = new Date(); // Get the current time
@@ -114,9 +153,9 @@ const PetScreen = ({ setCurrentPage }) => {
         console.log('Reducing happiness due to no cleaning');
         newHappiness -= 4;
     }
-    if ((currentTime - lastPlayed) / 6000 >= 0.6) { 
+    if ((currentTime - lastPlayed) / 60000 >= 1) { 
         console.log('Reducing happiness due to no play');
-        newHappiness -= 5;
+        newHappiness -= 2;
     }
     if ((currentTime - lastFed) / 60000 >= 5) {
         console.log('Reducing happiness due to no feeding');
@@ -302,6 +341,7 @@ const PetScreen = ({ setCurrentPage }) => {
               </div>
             ))}
           </div>
+          <button onClick={saveGame} className="saveButton">Save Game</button>
         </div>
       </div>
     </div>
