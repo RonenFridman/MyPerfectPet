@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import './style.css';
 import './petScreen.css';
 import heartsFull from './assets/heartsFull.png';
+import heartsHalf from './assets/heartsHalf.png';
+import heartsEmpty from './assets/heartsEmpty.png';
 import clean1 from './assets/clean1.png';
 import clean2 from './assets/clean2.png';
 import food from './assets/food.png';
@@ -13,17 +15,19 @@ import eggSmelly from './assets/eggSmelly.gif';
 import egg from './assets/egg1.png';
 
 const PetScreen = ({ setCurrentPage }) => {
-  const [additionalSquares, setAdditionalSquares] = useState([]);
-  const [coinCount, setCoinCount] = useState(0);
-  const [happiness, setHappiness] = useState(100);
-  const [age, setAge] = useState(0);
-  const [hatched, setHatched] = useState(0);
-  const [lastCleaned, setLastCleaned] = useState(new Date());
-  const [lastPlayed, setLastPlayed] = useState(new Date());
-  const [lastFed, setLastFed] = useState(new Date());
-  const [lastMedicine, setLastMedicine] = useState(new Date());
+  const [additionalSquares, setAdditionalSquares] = useState([]); // Tracks extra buttons when clicking on gray squarest
+  const [coinCount, setCoinCount] = useState(0); // Tracks the number of coins
+  const [happiness, setHappiness] = useState(100); // Tracks the pet's happiness level
+  const [age, setAge] = useState(0); // Tracks the pet's age
+  const [hatched, setHatched] = useState(0); // Tracks whether the egg has hatched
+  const [lastCleaned, setLastCleaned] = useState(new Date()); // Stores the last time the pet was cleaned
+  const [lastPlayed, setLastPlayed] = useState(new Date()); // Stores the last time the pet was played with
+  const [lastFed, setLastFed] = useState(new Date()); // Stores the last time the pet was fed
+  const [lastMedicine, setLastMedicine] = useState(new Date()); // Stores the last time the pet received medicine
+  const [hearts, setHearts] = useState([heartsFull, heartsFull, heartsFull, heartsFull, heartsFull]); // Tracks the hearts displayed representing happiness
 
   useEffect(() => {
+    // This function handles click events on the document and toggles visibility of gray squares
     const handleDocumentClick = (event) => {
       const graySquares = document.querySelectorAll('.graySquare');
       if (event.target.classList.contains('graySquare') || event.target.closest('.graySquare')) {
@@ -34,143 +38,186 @@ const PetScreen = ({ setCurrentPage }) => {
         graySquares.forEach(square => {
           square.classList.remove('hidden');
         });
-        setAdditionalSquares([]);
+        setAdditionalSquares([]); // Resets additional squares if a click happens outside a gray square
       }
     };
 
     document.addEventListener('click', handleDocumentClick);
-    const coinInterval = setInterval(addCoinByTimer, 60000);
-    const paramInterval = setInterval(checkParam, 60000);
-    const ageInterval = setInterval(incrementAge, 180000);
+    
+    // Setup intervals for recurring tasks: adding coins, checking parameters, and incrementing age
+    const coinInterval = setInterval(addCoinByTimer, 60000); // Adds coins every 1 min
+    const paramInterval = setInterval(checkParam, 6000); // Checks parameters every 1 min
+    const ageInterval = setInterval(incrementAge, 180000); // Increments age every 3 min
 
+    // Cleanup intervals and event listeners when the component is unmounted
     return () => {
       document.removeEventListener('click', handleDocumentClick);
       clearInterval(coinInterval);
       clearInterval(paramInterval);
       clearInterval(ageInterval);
     };
-  }, []);
+  }, [happiness]); // Dependencies are declared here to ensure effects are correctly re-run when necessary
 
+  // Function to add coins based on the current happiness level
   const addCoinByTimer = useCallback(() => {
     setCoinCount(prevCount => prevCount + (happiness > 50 ? 15 : 10));
   }, [happiness]);
 
+  // Function to subtract coins based on an activity's cost 
   const subCoinByActivity = useCallback((actionValue) => {
     setCoinCount(prevCount => {
       if (prevCount - actionValue >= 0) {
-        return prevCount - actionValue;
+        return prevCount - actionValue; // Deducts coins if enough coins are available
       } else {
         console.log(`Not Enough Coins: ${prevCount}`);
-        return prevCount;
+        return prevCount; // If not enough coins, returns the same count without deduction
       }
     });
   }, []);
 
+  // Function to check the pet's happiness and log appropriate messages
   const checkHappiness = useCallback((newHappiness) => {
     if (newHappiness <= 0) {
-      console.log(`GAME OVER`);
+      console.log(`GAME OVER`); // Logs game over if happiness drops to zero or below
     } else {
-      console.log(`Happiness is now: ${newHappiness}`);
+      console.log(`Happiness is now: ${newHappiness}`); // Logs the current happiness
     }
   }, []);
 
+  // Function to calculate which heart images to display based on happiness
+  const calculateHearts = useCallback((happiness) => {
+    const heartsArray = [];
+
+    for (let i = 0; i < 5; i++) {
+        const heartHappiness = happiness - i * 20; // Calculates happiness range for each heart
+        if (heartHappiness >= 20) {
+            heartsArray.push(heartsFull); // Full heart if happiness is above 20 for this segment
+        } else if (heartHappiness >= 10) {
+            heartsArray.push(heartsHalf); // Half heart if happiness is between 10 and 20
+        } else {
+            heartsArray.push(heartsEmpty); // Empty heart if happiness is below 10
+        }
+    }
+
+    setHearts(heartsArray); // Updates the hearts array in state
+  }, []);
+
+  // Function to check various parameters and adjust happiness accordingly
   const checkParam = useCallback(() => {
-    const currentTime = new Date();
-    let newHappiness = happiness;
+    const currentTime = new Date(); // Get the current time
+    let newHappiness = happiness; // Start with the current happiness level
 
-    if ((currentTime - lastCleaned) / 60000 >= 5) newHappiness -= 4;
-    if ((currentTime - lastPlayed) / 60000 >= 1) newHappiness -= 2;
-    if ((currentTime - lastFed) / 60000 >= 5) newHappiness -= 3;
-    if ((currentTime - lastMedicine) / 60000 >= 10) newHappiness -= 8;
+    console.log('Current Happiness:', happiness); 
 
-    setHappiness(newHappiness);
-    checkHappiness(newHappiness);
-  }, [happiness, lastCleaned, lastPlayed, lastFed, lastMedicine, checkHappiness]);
+    // Check how long it's been since each action was last performed and reduce happiness if necessary
+    if ((currentTime - lastCleaned) / 60000 >= 5) {
+        console.log('Reducing happiness due to no cleaning');
+        newHappiness -= 4;
+    }
+    if ((currentTime - lastPlayed) / 6000 >= 0.6) { 
+        console.log('Reducing happiness due to no play');
+        newHappiness -= 5;
+    }
+    if ((currentTime - lastFed) / 60000 >= 5) {
+        console.log('Reducing happiness due to no feeding');
+        newHappiness -= 3;
+    }
+    if ((currentTime - lastMedicine) / 60000 >= 10) {
+        console.log('Reducing happiness due to no medicine');
+        newHappiness -= 8;
+    }
 
+    setHappiness(newHappiness); // Updates happiness value
+    calculateHearts(newHappiness); // Update the hearts display based on the new happiness
+    checkHappiness(newHappiness); // checks if happiness is between 0-100
+  }, [happiness, lastCleaned, lastPlayed, lastFed, lastMedicine, checkHappiness, calculateHearts]);
+
+  // Function to increment the pet's age
   const incrementAge = useCallback(() => {
     setAge(prevAge => {
-      const newAge = prevAge + 1;
+      const newAge = prevAge + 1; // Increment age by one
       if (newAge >= 120) {
-        console.log('Your pet has died of old age.');
+        console.log('Your pet has died of old age.'); // Pet dies of old age at 120
       } else if (newAge === 18) {
-        setHatched(1);
+        setHatched(1); // Set hatched to true when age reaches 18
         console.log('Your egg has hatched!');
       } else {
-        console.log(`Pet age is now: ${newAge}`);
+        console.log(`Pet age is now: ${newAge}`); // Log the current age
       }
       return newAge;
     });
   }, []);
 
+  // Function to increase happiness, capped at 100, and recalculate hearts
   const addHappiness = useCallback((val) => {
     setHappiness(prevHappiness => {
       let newHappiness = prevHappiness + val;
       if (newHappiness > 100) {
-        newHappiness = 100;
+        newHappiness = 100; // Cap happiness at 100
       }
+      calculateHearts(newHappiness); // Update hearts display based on new happiness
       return newHappiness;
     });
-  }, []);
+  }, [calculateHearts]);
 
-
+  // Handlers for various actions the user can take, including cleaning, feeding, playing, and giving medicine
   const handleClickCleanBetter = useCallback(() => {
     console.log('Cleaning pet...');
-    subCoinByActivity(2);
-    setLastCleaned(new Date());
-    addHappiness(4);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(2); // Deduct coins
+    setLastCleaned(new Date());  // Update lastCleaned to the current time
+    addHappiness(4); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickCleanWorst = useCallback(() => {
     console.log('Cleaning pet...');
-    subCoinByActivity(4);
-    setLastCleaned(new Date());
-    addHappiness(8);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(4); // Deduct coins
+    setLastCleaned(new Date());  // Update lastCleaned to the current time
+    addHappiness(8); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickFoodBetter = useCallback(() => {
     console.log('Feeding pet...');
-    subCoinByActivity(4);
-    setLastFed(new Date());
-    addHappiness(8);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(4); // Deduct coins
+    setLastFed(new Date());  // Update lastFed to the current time
+    addHappiness(8); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickFoodWorst = useCallback(() => {
     console.log('Feeding pet...');
-    subCoinByActivity(3);
-    setLastFed(new Date());
-    addHappiness(6);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(3); // Deduct coins
+    setLastFed(new Date());  // Update lastFed to the current time
+    addHappiness(6); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickPlayBetter = useCallback(() => {
     console.log('Playing with pet...');
-    subCoinByActivity(4);
-    setLastPlayed(new Date());
-    addHappiness(10);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(4); // Deduct coins
+    setLastPlayed(new Date());  // Update lastPlayed to the current time
+    addHappiness(10); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickPlayWorst = useCallback(() => {
     console.log('Playing with pet...');
-    subCoinByActivity(2);
-    setLastPlayed(new Date());
-    addHappiness(5);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(2); // Deduct coins
+    setLastPlayed(new Date());  // Update lastPlayed to the current time
+    addHappiness(5); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickMedicineBetter = useCallback(() => {
     console.log('Giving pet medicine...');
-    subCoinByActivity(4);
-    setLastMedicine(new Date());
-    addHappiness(8);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(4); // Deduct coins
+    setLastMedicine(new Date());  // Update lastMedicine to the current time
+    addHappiness(8); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
+  
   const handleClickMedicineWorst = useCallback(() => {
     console.log('Giving pet medicine...');
-    subCoinByActivity(3);
-    setLastMedicine(new Date());
-    addHappiness(6);
-    checkHappiness(happiness);
-  }, [subCoinByActivity, addHappiness, checkHappiness, happiness]);
+    subCoinByActivity(3); // Deduct coins
+    setLastMedicine(new Date());  // Update lastMedicine to the current time
+    addHappiness(6); // Increase happiness
+  }, [subCoinByActivity, addHappiness]);
 
-
+  // Function to handle clicks on gray squares and display additional action options
   const handleGraySquareClick = useCallback((buttonType) => {
     if (buttonType === 'clean') {
       setAdditionalSquares(prevSquares => [
@@ -182,10 +229,7 @@ const PetScreen = ({ setCurrentPage }) => {
       setAdditionalSquares(prevSquares => [
         ...prevSquares,
         { id: prevSquares.length + 1, imgSrc: food, onClick: handleClickFoodBetter },
-        { id: prevSquares.length + 2, imgSrc: food, onClick: handleClickFoodWorst },
-        { id: prevSquares.length + 2, imgSrc: food, onClick: handleClickFoodWorst },
         { id: prevSquares.length + 2, imgSrc: food, onClick: handleClickFoodWorst }
-
       ]);
     } else if (buttonType === 'play') {
       setAdditionalSquares(prevSquares => [
@@ -203,15 +247,15 @@ const PetScreen = ({ setCurrentPage }) => {
   }, [handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
     handleClickPlayBetter, handleClickPlayWorst, handleClickMedicineBetter, handleClickMedicineWorst]);
   
-
+  // Function to handle clicks on additional squares and reset the displayed options
   const handleAdditionalSquareClick = useCallback(() => {
     setAdditionalSquares([]);
   }, []);
 
+  // Function to handle clicks on the coin and increment the coin count
   const handleCoinClick = useCallback(() => {
     setCoinCount(prevCount => prevCount + 1);
   }, []);
-
 
   return (
     <div>
@@ -222,11 +266,9 @@ const PetScreen = ({ setCurrentPage }) => {
             <span>{coinCount}</span>
           </div>
           <div id="happyBar">Happiness:
-            <img className="happyImg" id="heart1" src={heartsFull} alt="Heart 1" />
-            <img className="happyImg" id="heart2" src={heartsFull} alt="Heart 2" />
-            <img className="happyImg" id="heart3" src={heartsFull} alt="Heart 3" />
-            <img className="happyImg" id="heart4" src={heartsFull} alt="Heart 4" />
-            <img className="happyImg" id="heart5" src={heartsFull} alt="Heart 5" />
+            {hearts.map((heart, index) => (
+              <img key={index} className="happyImg" src={heart} alt={`Heart ${index + 1}`} />
+            ))}
           </div>
         </div>
         <div className='petArea'>
