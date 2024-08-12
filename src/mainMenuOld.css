@@ -1,0 +1,52 @@
+
+.menuButtons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* Add any other font-related properties you want to inherit */
+
+}
+.menuButtons button {
+    font-family: inherit; /* This ensures buttons inherit the font family from the body */
+    background-color: #e36588;
+    margin: 1vh;
+    font-size: 1.5vw; /* Use viewport width for font size */
+    border: none;
+    cursor: pointer;
+    width: 20vw;
+    height: 8vh;
+}
+.menuButtons button:hover {
+    background-color: #cb958e;
+}
+
+@media (max-width: 768px) {
+    #petImg1, #petImg2 {
+        position: fixed;
+        width: 24vw;
+        height: auto;
+    }
+    .mainTitle{
+        width: 80vw;
+        height: auto;
+    }
+    .menuButtons button {
+        font-size: medium;
+        white-space: nowrap;
+        width: auto;
+    }
+
+}
+
+#petImg1{
+    left: 24vw;
+}
+#petImg2{
+    right: 24vw;
+}
+#petImg1, #petImg2 {
+    animation: bounce 2s infinite;
+    position: absolute;
+    bottom: 24vh;
+}

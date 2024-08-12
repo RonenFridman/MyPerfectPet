@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './style.css';
-import './mainMenu.css';
+//import './mainMenu.css';
 import MainMenu from './mainMenu';
 import Footer from './footer';
 import EggSelector from './EggSelector';
@@ -28,7 +28,7 @@ const Main = () => {
   };
 
   return (
-    <div>
+    <div class="flex justify-center items-center flex-col min-h-screen">
       {renderPage()}
       <Footer />
     </div>

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import './style.css';
-import './nameSelector.css';
+//import './nameSelector.css';
 import eggImage from './assets/egg1.png';
 
 const NameSelector = ({ setCurrentPage }) => {
@@ -11,7 +10,7 @@ const NameSelector = ({ setCurrentPage }) => {
       gridContainer.innerHTML = '';
       alphabet.forEach(letter => {
         const letterElement = document.createElement('div');
-        letterElement.className = 'alphabet-letter';
+        letterElement.className = 'alphabet-letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e] hover:bg-[#e36588]';
         letterElement.textContent = letter;
         gridContainer.appendChild(letterElement);
       });
@@ -73,30 +72,35 @@ const NameSelector = ({ setCurrentPage }) => {
 
   return (
     <div>
-      <h1 className="eggTitle">Take Good Care of Her/him</h1>
-      <div className="petBackground">
-        <div className="name-selector">
-          <div className="name-display">
-            <span className="letter">_</span>
-            <span className="letter">_</span>
-            <span className="letter">_</span>
-            <span className="letter">_</span>
-            <span className="letter">_</span>
-            <span className="letter">_</span>
-          </div>
-          <div>
-            <img className="eggImg" src={eggImage} alt="Egg" />
-          </div>
-          <div className="alphabet-grid">
-            {/* Alphabet grid content goes here */}
-          </div>
-          <div className="misc-grid">
-            <span className="letter" id="deleteBtn">Delete</span>
-            <span onClick={() => setCurrentPage('petScreen')} className="letter" id="confirmBtn">Confirm</span>
-          </div>
-        </div>
+  <h1 className="eggTitle text-4xl font-bold text-center mb-4">Take Good Care of Her/him</h1>
+  <div
+    className="petBackground bg-cover bg-no-repeat bg-center w-[70vw] h-[70vh] flex flex-col justify-center items-center text-center"
+    style={{ backgroundImage: "url('./assets/bg.jpg')" }}
+  >
+    <div className="name-selector block w-[40vw] h-[30vw] p-[1vh_3vw]">
+      <div className="name-display flex justify-center items-center mb-[6vh]">
+        <span className="letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e]">_</span>
+        <span className="letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e]">_</span>
+        <span className="letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e]">_</span>
+        <span className="letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e]">_</span>
+        <span className="letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e]">_</span>
+        <span className="letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#cb958e]">_</span>
       </div>
+      <div className='flex justify-center items-center'>
+        <img className="eggImg w-[9vw] mb-[4vh] animate-shake" src={eggImage} alt="Egg" />
+      </div>
+      <div className="alphabet-grid grid grid-cols-9 grid-rows-3 gap-1">
+        {/* Alphabet grid content goes here */}
+      </div>
+      <div className="misc-grid flex flex-row mt-[3vh] justify-center items-center">
+      <span className="letter hover:bg-[#e36588] text-xl p-2 border-2 border-black bg-[#cb958e] cursor-pointer user-select-none transition-colors duration-200 hover:bg-[#e36588] mr-4" id="deleteBtn">Delete</span>
+      <span onClick={() => setCurrentPage('petScreen')} className="letter hover:bg-[#e36588] text-xl p-2 border-2 border-black bg-[#cb958e] cursor-pointer user-select-none transition-colors duration-200 hover:bg-[#e36588]" id="confirmBtn">Confirm</span>
     </div>
+    </div>
+  </div>
+</div>
+
+
   );
 };
 
