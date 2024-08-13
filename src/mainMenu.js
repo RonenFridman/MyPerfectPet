@@ -6,6 +6,22 @@ import animalsImg from './assets/animals.png';
 import animals1Img from './assets/animals1.png';
 
 const MainMenu = ({ setCurrentPage }) => {
+
+  const handleContinueGame = () => {
+    const savedGameState = localStorage.getItem('petGameState');
+    if (savedGameState) {
+      setCurrentPage('petScreen'); // This triggers loading of the saved game state in PetScreen
+    } else {
+      console.log("No saved game found.");
+      // Do nothing if there's no saved game
+    }
+  };
+
+  const handleNewGame = () => {
+    localStorage.removeItem('petGameState'); // Clear the saved game state
+    setCurrentPage('eggSelector'); // Start a new game
+  };
+
   return (
     <div className="flex justify-center items-center flex-col min-h-screen">
       <div >
