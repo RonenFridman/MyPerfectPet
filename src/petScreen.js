@@ -29,7 +29,26 @@ import hungericon from './assets/hungericon.png';
 import dirtyicon from './assets/dirtyicon.png';
 import sickicon from './assets/sickicon.png';
 
+// Component to display the "Game Over" popup
+const GameOverPopup = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+        <h2 className="text-2xl font-bold mb-4">Game Over</h2>
+        <p className="mb-4">Your pet's happiness has reached zero.</p>
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+          onClick={onClose}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const PetScreen = ({ setCurrentPage }) => {
+  // State declarations for various game properties
   const [additionalSquares, setAdditionalSquares] = useState([]); 
   const [coinCount, setCoinCount] = useState(0); 
   const [happiness, setHappiness] = useState(100); 
@@ -46,6 +65,10 @@ const PetScreen = ({ setCurrentPage }) => {
   const [isFed, setIsFed] = useState(true); 
   const [isGivenMedicine, setIsGivenMedicine] = useState(true); 
 
+  // New state to control the visibility of the Game Over popup
+  const [showGameOver, setShowGameOver] = useState(false); 
+
+  // Function to calculate and set the hearts array based on happiness level
   const calculateHearts = useCallback((happiness) => {
     const heartsArray = [];
 
@@ -63,6 +86,7 @@ const PetScreen = ({ setCurrentPage }) => {
     setHearts(heartsArray);
   }, []);
 
+  // Function to load the saved game state from localStorage
   const loadGame = useCallback(() => {
     const savedGameState = localStorage.getItem('petGameState');
     if (savedGameState) {
@@ -80,39 +104,12 @@ const PetScreen = ({ setCurrentPage }) => {
     }
   }, [calculateHearts]);
 
+  // Load the game when the component is first rendered
   useEffect(() => {
     loadGame();
   }, [loadGame]);
 
-  useEffect(() => {
-    const handleDocumentClick = (event) => {
-      const graySquares = document.querySelectorAll('.graySquare');
-      if (event.target.classList.contains('graySquare') || event.target.closest('.graySquare')) {
-        graySquares.forEach(square => {
-          square.classList.add('hidden');
-        });
-      } else {
-        graySquares.forEach(square => {
-          square.classList.remove('hidden');
-        });
-        setAdditionalSquares([]);
-      }
-    };
-    
-    document.addEventListener('click', handleDocumentClick);
-
-    const coinInterval = setInterval(addCoinByTimer, 60000); 
-    const paramInterval = setInterval(checkParam, 60000); 
-    const ageInterval = setInterval(incrementAge, 180000); 
-
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-      clearInterval(coinInterval);
-      clearInterval(paramInterval);
-      clearInterval(ageInterval);
-    };
-  }, [happiness]);
-
+  // Function to save the game state to localStorage
   const saveGame = useCallback(() => {
     const gameState = {
       coinCount,
@@ -128,10 +125,12 @@ const PetScreen = ({ setCurrentPage }) => {
     console.log('Game saved:', gameState);
   }, [coinCount, happiness, age, hatched, lastCleaned, lastPlayed, lastFed, lastMedicine]);
 
+  // Function to add coins based on a timer, with more coins if happiness is above 50
   const addCoinByTimer = useCallback(() => {
     setCoinCount(prevCount => prevCount + (happiness > 50 ? 15 : 10));
   }, [happiness]);
 
+  // Function to subtract coins based on activity cost
   const subCoinByActivity = useCallback((actionValue) => {
     setCoinCount(prevCount => {
       if (prevCount - actionValue >= 0) {
@@ -143,36 +142,39 @@ const PetScreen = ({ setCurrentPage }) => {
     });
   }, []);
 
+  // Function to check happiness and handle game over scenario
   const checkHappiness = useCallback((newHappiness) => {
     if (newHappiness <= 0) {
       console.log(`GAME OVER`);
+      setShowGameOver(true); // Show the game over popup
     } else {
       console.log(`Happiness is now: ${newHappiness}`);
     }
   }, []);
 
+  // Function to check various pet parameters and reduce happiness accordingly
   const checkParam = useCallback(() => {
     const currentTime = new Date(); 
     let newHappiness = happiness; 
 
     console.log('Current Happiness:', happiness);
 
-    if ((currentTime - lastCleaned) / 60000 >= 5) {
+    if ((currentTime - lastCleaned) / 60000 >= 5) { // Reduce happiness if not cleaned in last 5 minutes
         console.log('Reducing happiness due to no cleaning');
         newHappiness -= 4;
         setIsCleaned(false);
     }
-    if ((currentTime - lastPlayed) / 60000 >= 1) { 
+    if ((currentTime - lastPlayed) / 6000 >= 0.6) {  // Reduce happiness if not played in last minute
         console.log('Reducing happiness due to no play');
-        newHappiness -= 2;
+        newHappiness -= 50;
         setIsPlayed(false);
     }
-    if ((currentTime - lastFed) / 60000 >= 5) {
+    if ((currentTime - lastFed) / 60000 >= 5) {  // Reduce happiness if not fed in last 5 minutes
         console.log('Reducing happiness due to no feeding');
         newHappiness -= 3;
         setIsFed(false);
     }
-    if ((currentTime - lastMedicine) / 60000 >= 10) {
+    if ((currentTime - lastMedicine) / 60000 >= 10) { // Reduce happiness if not given medicine in last 10 minutes
         console.log('Reducing happiness due to no medicine');
         newHappiness -= 8;
         setIsGivenMedicine(false);
@@ -183,6 +185,7 @@ const PetScreen = ({ setCurrentPage }) => {
     checkHappiness(newHappiness);
   }, [happiness, lastCleaned, lastPlayed, lastFed, lastMedicine, checkHappiness, calculateHearts]);
 
+  // Function to increment the pet's age
   const incrementAge = useCallback(() => {
     setAge(prevAge => {
       const newAge = prevAge + 1; 
@@ -198,6 +201,7 @@ const PetScreen = ({ setCurrentPage }) => {
     });
   }, []);
 
+  // Function to add happiness and adjust hearts based on new happiness level
   const addHappiness = useCallback((val) => {
     setHappiness(prevHappiness => {
       let newHappiness = prevHappiness + val;
@@ -209,6 +213,7 @@ const PetScreen = ({ setCurrentPage }) => {
     });
   }, [calculateHearts]);
 
+  // Handlers for different activities (cleaning, feeding, playing, giving medicine)
   const handleClickCleanBetter = useCallback(() => {
     console.log('Cleaning pet...');
     subCoinByActivity(2); 
@@ -273,6 +278,7 @@ const PetScreen = ({ setCurrentPage }) => {
     setIsGivenMedicine(true);
   }, [subCoinByActivity, addHappiness]);
 
+  // Function to handle clicks on the gray squares to show additional options
   const handleGraySquareClick = useCallback((buttonType) => {
     if (buttonType === 'clean') {
       setAdditionalSquares(prevSquares => [
@@ -314,14 +320,17 @@ const PetScreen = ({ setCurrentPage }) => {
   }, [handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
     handleClickPlayBetter, handleClickPlayWorst, handleClickMedicineBetter, handleClickMedicineWorst]);
   
+  // Function to handle clicks on additional squares to remove them
   const handleAdditionalSquareClick = useCallback(() => {
     setAdditionalSquares([]);
   }, []);
 
+  // Function to handle clicking on the coin icon to add a coin
   const handleCoinClick = useCallback(() => {
     setCoinCount(prevCount => prevCount + 1);
   }, []);
 
+  // Function to handle clicking the save button
   const handleSaveClick = () => {
     saveGame(); 
     const saveButton = document.getElementById('saveButton');
@@ -333,6 +342,7 @@ const PetScreen = ({ setCurrentPage }) => {
     console.log('Game saved!'); 
   };
 
+  // Effect to handle clicks on the document and adjust UI accordingly
   useEffect(() => {
     const handleDocumentClick = (event) => {
       const graySquares = document.querySelectorAll('.graySquare');
@@ -363,29 +373,37 @@ const PetScreen = ({ setCurrentPage }) => {
     };
   }, []);
 
+  // Main interval to handle age, parameters, and coins
   useEffect(() => {
     const timer = setInterval(() => {
       incrementAge();
       checkParam();
       addCoinByTimer();
-    }, 60000);
+    }, 6000);
 
     return () => clearInterval(timer);
   }, [incrementAge, checkParam, addCoinByTimer]);
+
+  // Function to handle closing the game over popup and navigating back to the main menu
+  const handleGameOverClose = useCallback(() => {
+    setShowGameOver(false);
+    setCurrentPage('mainMenu'); // Navigate back to the main menu
+  }, [setCurrentPage]);
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')]">
       
       {/* Indicator icons inside the background */}
       <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex flex-col items-center space-y-2 mr-4">
-  {!isFed && <img src={hungericon} alt="Feed Indicator" style={{ width: '4rem', height: '4rem' }} />}
-  {!isCleaned && <img src={dirtyicon} alt="Clean Indicator" style={{ width: '4rem', height: '4rem' }} />}
-  {!isPlayed && <img src={boredicon} alt="Play Indicator" style={{ width: '4rem', height: '4rem' }} />}
-  {!isGivenMedicine && <img src={sickicon} alt="Medicine Indicator" style={{ width: '4rem', height: '4rem' }} />}
-</div>
+        {!isFed && <img src={hungericon} alt="Feed Indicator" style={{ width: '4rem', height: '4rem' }} />}
+        {!isCleaned && <img src={dirtyicon} alt="Clean Indicator" style={{ width: '4rem', height: '4rem' }} />}
+        {!isPlayed && <img src={boredicon} alt="Play Indicator" style={{ width: '4rem', height: '4rem' }} />}
+        {!isGivenMedicine && <img src={sickicon} alt="Medicine Indicator" style={{ width: '4rem', height: '4rem' }} />}
+      </div>
 
-
-
+      {/* Game over popup */}
+      {showGameOver && <GameOverPopup onClose={handleGameOverClose} />}
+      
       <img id='saveButton' src={save} onClick={handleSaveClick} className="absolute saveButton left-0 bottom-0 w-20 h-20"/>
       <div id="statusBar" className="h-[220px] flex ml-[1vw] items-center">
         <div id="coinCounter" className="flex mr-[3vw]">
