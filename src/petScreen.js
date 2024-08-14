@@ -23,7 +23,13 @@ import play1 from './assets/play1.png';
 import play2 from './assets/play2.png';
 import save from './assets/save.png';
 
-const PetScreen = ({ setCurrentPage}) => {
+// New icons for the indicators
+import boredicon from './assets/boredicon.png';
+import hungericon from './assets/hungericon.png';
+import dirtyicon from './assets/dirtyicon.png';
+import sickicon from './assets/sickicon.png';
+
+const PetScreen = ({ setCurrentPage }) => {
   const [additionalSquares, setAdditionalSquares] = useState([]); 
   const [coinCount, setCoinCount] = useState(0); 
   const [happiness, setHappiness] = useState(100); 
@@ -35,12 +41,11 @@ const PetScreen = ({ setCurrentPage}) => {
   const [lastMedicine, setLastMedicine] = useState(new Date()); 
   const [hearts, setHearts] = useState([heartsFull, heartsFull, heartsFull, heartsFull, heartsFull]); 
 
-  const [isCleaned, setIsCleaned] = useState(true); // Tracks if the pet has been cleaned
-  const [isPlayed, setIsPlayed] = useState(true); // Tracks if the pet has been played with
-  const [isFed, setIsFed] = useState(true); // Tracks if the pet has been fed
-  const [isGivenMedicine, setIsGivenMedicine] = useState(true); // Tracks if the pet has received medicine
+  const [isCleaned, setIsCleaned] = useState(true); 
+  const [isPlayed, setIsPlayed] = useState(true); 
+  const [isFed, setIsFed] = useState(true); 
+  const [isGivenMedicine, setIsGivenMedicine] = useState(true); 
 
-  // Function to calculate which heart images to display based on happiness
   const calculateHearts = useCallback((happiness) => {
     const heartsArray = [];
 
@@ -58,7 +63,6 @@ const PetScreen = ({ setCurrentPage}) => {
     setHearts(heartsArray);
   }, []);
 
-  // Function to load the game state
   const loadGame = useCallback(() => {
     const savedGameState = localStorage.getItem('petGameState');
     if (savedGameState) {
@@ -109,7 +113,6 @@ const PetScreen = ({ setCurrentPage}) => {
     };
   }, [happiness]);
 
-  // Function to save the game state
   const saveGame = useCallback(() => {
     const gameState = {
       coinCount,
@@ -125,12 +128,10 @@ const PetScreen = ({ setCurrentPage}) => {
     console.log('Game saved:', gameState);
   }, [coinCount, happiness, age, hatched, lastCleaned, lastPlayed, lastFed, lastMedicine]);
 
-  // Function to add coins based on the current happiness level
   const addCoinByTimer = useCallback(() => {
     setCoinCount(prevCount => prevCount + (happiness > 50 ? 15 : 10));
   }, [happiness]);
 
-  // Function to subtract coins based on an activity's cost 
   const subCoinByActivity = useCallback((actionValue) => {
     setCoinCount(prevCount => {
       if (prevCount - actionValue >= 0) {
@@ -142,7 +143,6 @@ const PetScreen = ({ setCurrentPage}) => {
     });
   }, []);
 
-  // Function to check the pet's happiness and log appropriate messages
   const checkHappiness = useCallback((newHappiness) => {
     if (newHappiness <= 0) {
       console.log(`GAME OVER`);
@@ -160,22 +160,22 @@ const PetScreen = ({ setCurrentPage}) => {
     if ((currentTime - lastCleaned) / 60000 >= 5) {
         console.log('Reducing happiness due to no cleaning');
         newHappiness -= 4;
-        setIsCleaned(false); // Pet wasn't cleaned, so set isCleaned to false
+        setIsCleaned(false);
     }
     if ((currentTime - lastPlayed) / 60000 >= 1) { 
         console.log('Reducing happiness due to no play');
         newHappiness -= 2;
-        setIsPlayed(false); // Pet wasn't played with, so set isPlayed to false
+        setIsPlayed(false);
     }
     if ((currentTime - lastFed) / 60000 >= 5) {
         console.log('Reducing happiness due to no feeding');
         newHappiness -= 3;
-        setIsFed(false); // Pet wasn't fed, so set isFed to false
+        setIsFed(false);
     }
     if ((currentTime - lastMedicine) / 60000 >= 10) {
         console.log('Reducing happiness due to no medicine');
         newHappiness -= 8;
-        setIsGivenMedicine(false); // Pet wasn't given medicine, so set isGivenMedicine to false
+        setIsGivenMedicine(false);
     }
 
     setHappiness(newHappiness); 
@@ -183,7 +183,6 @@ const PetScreen = ({ setCurrentPage}) => {
     checkHappiness(newHappiness);
   }, [happiness, lastCleaned, lastPlayed, lastFed, lastMedicine, checkHappiness, calculateHearts]);
 
-  // Function to increment the pet's age
   const incrementAge = useCallback(() => {
     setAge(prevAge => {
       const newAge = prevAge + 1; 
@@ -199,7 +198,6 @@ const PetScreen = ({ setCurrentPage}) => {
     });
   }, []);
 
-  // Function to increase happiness, capped at 100, and recalculate hearts
   const addHappiness = useCallback((val) => {
     setHappiness(prevHappiness => {
       let newHappiness = prevHappiness + val;
@@ -211,13 +209,12 @@ const PetScreen = ({ setCurrentPage}) => {
     });
   }, [calculateHearts]);
 
-  // Update handleClick functions to set the respective boolean variables to true
   const handleClickCleanBetter = useCallback(() => {
     console.log('Cleaning pet...');
     subCoinByActivity(2); 
     setLastCleaned(new Date());  
     addHappiness(4); 
-    setIsCleaned(true); // Set isCleaned to true
+    setIsCleaned(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickCleanWorst = useCallback(() => {
@@ -225,7 +222,7 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(4); 
     setLastCleaned(new Date());  
     addHappiness(8); 
-    setIsCleaned(true); // Set isCleaned to true
+    setIsCleaned(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickFoodBetter = useCallback(() => {
@@ -233,7 +230,7 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(4); 
     setLastFed(new Date());  
     addHappiness(8); 
-    setIsFed(true); // Set isFed to true
+    setIsFed(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickFoodWorst = useCallback(() => {
@@ -241,7 +238,7 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(3); 
     setLastFed(new Date());  
     addHappiness(6); 
-    setIsFed(true); // Set isFed to true
+    setIsFed(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickPlayBetter = useCallback(() => {
@@ -249,7 +246,7 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(4); 
     setLastPlayed(new Date());  
     addHappiness(10); 
-    setIsPlayed(true); // Set isPlayed to true
+    setIsPlayed(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickPlayWorst = useCallback(() => {
@@ -257,7 +254,7 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(2); 
     setLastPlayed(new Date());  
     addHappiness(5); 
-    setIsPlayed(true); // Set isPlayed to true
+    setIsPlayed(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickMedicineBetter = useCallback(() => {
@@ -265,7 +262,7 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(4); 
     setLastMedicine(new Date());  
     addHappiness(8); 
-    setIsGivenMedicine(true); // Set isGivenMedicine to true
+    setIsGivenMedicine(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickMedicineWorst = useCallback(() => {
@@ -273,10 +270,9 @@ const PetScreen = ({ setCurrentPage}) => {
     subCoinByActivity(3); 
     setLastMedicine(new Date());  
     addHappiness(6); 
-    setIsGivenMedicine(true); // Set isGivenMedicine to true
+    setIsGivenMedicine(true);
   }, [subCoinByActivity, addHappiness]);
 
-  // Function to handle clicks on gray squares and display additional action options
   const handleGraySquareClick = useCallback((buttonType) => {
     if (buttonType === 'clean') {
       setAdditionalSquares(prevSquares => [
@@ -318,12 +314,10 @@ const PetScreen = ({ setCurrentPage}) => {
   }, [handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
     handleClickPlayBetter, handleClickPlayWorst, handleClickMedicineBetter, handleClickMedicineWorst]);
   
-  // Function to handle clicks on additional squares and reset the displayed options
   const handleAdditionalSquareClick = useCallback(() => {
     setAdditionalSquares([]);
   }, []);
 
-  // Function to handle clicks on the coin and increment the coin count
   const handleCoinClick = useCallback(() => {
     setCoinCount(prevCount => prevCount + 1);
   }, []);
@@ -381,6 +375,17 @@ const PetScreen = ({ setCurrentPage}) => {
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')]">
+      
+      {/* Indicator icons inside the background */}
+      <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex flex-col items-center space-y-2 mr-4">
+  {!isFed && <img src={hungericon} alt="Feed Indicator" style={{ width: '4rem', height: '4rem' }} />}
+  {!isCleaned && <img src={dirtyicon} alt="Clean Indicator" style={{ width: '4rem', height: '4rem' }} />}
+  {!isPlayed && <img src={boredicon} alt="Play Indicator" style={{ width: '4rem', height: '4rem' }} />}
+  {!isGivenMedicine && <img src={sickicon} alt="Medicine Indicator" style={{ width: '4rem', height: '4rem' }} />}
+</div>
+
+
+
       <img id='saveButton' src={save} onClick={handleSaveClick} className="absolute saveButton left-0 bottom-0 w-20 h-20"/>
       <div id="statusBar" className="h-[220px] flex ml-[1vw] items-center">
         <div id="coinCounter" className="flex mr-[3vw]">
@@ -418,6 +423,8 @@ const PetScreen = ({ setCurrentPage}) => {
           </div>
         </div>
       </div>
+      
+
       <div className="fixed-container bottom-0vh left-0 right-0 flex flex-wrap justify-center gap-4 p-4">
         {additionalSquares.map(square => (
           <div
