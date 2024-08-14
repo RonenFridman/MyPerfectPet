@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './style.css';
 
 import titleImg from './assets/title3.png';
@@ -6,14 +6,14 @@ import animalsImg from './assets/animals.png';
 import animals1Img from './assets/animals1.png';
 
 const MainMenu = ({ setCurrentPage }) => {
+  const [showPopup, setShowPopup] = useState(false); // State to control the popup visibility
 
   const handleContinueGame = () => {
     const savedGameState = localStorage.getItem('petGameState');
     if (savedGameState) {
       setCurrentPage('petScreen'); // This triggers loading of the saved game state in PetScreen
     } else {
-      console.log("No saved game found.");
-      // Do nothing if there's no saved game
+      setShowPopup(true); // Show the popup if there's no saved game
     }
   };
 
@@ -22,9 +22,13 @@ const MainMenu = ({ setCurrentPage }) => {
     setCurrentPage('eggSelector'); // Start a new game
   };
 
+  const closePopup = () => {
+    setShowPopup(false); // Close the popup
+  };
+
   return (
     <div className="flex justify-center items-center flex-col min-h-screen">
-      <div >
+      <div>
         <div className="mb-8 flex justify-center w-full">
           <img className="w-[80vw] sm:w-auto h-auto" src={titleImg} alt="My Image" />
         </div>
@@ -57,6 +61,20 @@ const MainMenu = ({ setCurrentPage }) => {
           />
         </div>
       </div>
+
+      {showPopup && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded shadow-lg text-center">
+            <h2 className="text-2xl mb-4">No Saved Game Found</h2>
+            <button
+              className="bg-[#e36588] hover:bg-[#cb958e] text-white font-bold py-2 px-4 rounded"
+              onClick={closePopup}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
