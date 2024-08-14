@@ -2,22 +2,26 @@ import React, { useEffect, useState, useCallback } from 'react';
 import heartsFull from './assets/heartsFull.png';
 import heartsHalf from './assets/heartsHalf.png';
 import heartsEmpty from './assets/heartsEmpty.png';
+import clean from './assets/clean2.png';
 import clean1 from './assets/clean1.png';
-import clean2 from './assets/clean2.png';
+import clean2 from './assets/clean.png';
 import food from './assets/food.png';
-import info from './assets/info.png';
 import petInfo from './assets/petInfo.png';
 import medicane from './assets/medicine.png';
 import light from './assets/lightMode.png';
 import dark from './assets/darkMode.png';
 import coin from './assets/coin.png';
-import eggSmelly from './assets/eggSmelly.gif';
 import egg from './assets/egg1.png';
 import medicine1 from './assets/syringe.png';
 import medicine2 from './assets/medicine2.png';
 import food1 from './assets/food1.png';
 import food2 from './assets/food2.png';
 import food3 from './assets/food3.png';
+import food4 from './assets/food4.png';
+import play from './assets/play.png';
+import play1 from './assets/play1.png';
+import play2 from './assets/play2.png';
+import save from './assets/save.png';
 
 const PetScreen = ({ setCurrentPage }) => {
   const [additionalSquares, setAdditionalSquares] = useState([]); // Tracks extra buttons when clicking on gray squares
@@ -275,13 +279,13 @@ const PetScreen = ({ setCurrentPage }) => {
         { id: prevSquares.length + 1, imgSrc: food1, onClick: handleClickFoodBetter },
         { id: prevSquares.length + 2, imgSrc: food2, onClick: handleClickFoodWorst },
         { id: prevSquares.length + 3, imgSrc: food3, onClick: handleClickFoodWorst },
-        { id: prevSquares.length + 4, imgSrc: food, onClick: handleClickFoodWorst }
+        { id: prevSquares.length + 4, imgSrc: food4, onClick: handleClickFoodWorst }
       ]);
     } else if (buttonType === 'play') {
       setAdditionalSquares(prevSquares => [
         ...prevSquares,
-        { id: prevSquares.length + 1, imgSrc: light, onClick: handleClickPlayBetter },
-        { id: prevSquares.length + 2, imgSrc: dark, onClick: handleClickPlayWorst }
+        { id: prevSquares.length + 1, imgSrc: play1, onClick: handleClickPlayBetter },
+        { id: prevSquares.length + 2, imgSrc: play2, onClick: handleClickPlayWorst }
       ]);
     } else if (buttonType === 'medicine') {
       setAdditionalSquares(prevSquares => [
@@ -289,7 +293,13 @@ const PetScreen = ({ setCurrentPage }) => {
         { id: prevSquares.length + 1, imgSrc: medicine1, onClick: handleClickMedicineBetter },
         { id: prevSquares.length + 2, imgSrc: medicine2, onClick: handleClickMedicineWorst }
       ]);
-    } else if (buttonType === 'info') {
+    } else if (buttonType === 'light') {
+      setAdditionalSquares(prevSquares => [
+      ...prevSquares,
+      { id: prevSquares.length + 1, imgSrc: light, onClick: handleAdditionalSquareClick },
+      { id: prevSquares.length + 2, imgSrc: dark, onClick: handleAdditionalSquareClick } 
+    ]);
+    }else if (buttonType === 'info') {
       setTimeout(() => {
         document.getElementById('petInfo').classList.remove('hidden');
       }, 500);
@@ -310,6 +320,12 @@ const PetScreen = ({ setCurrentPage }) => {
     setCoinCount(prevCount => prevCount + 1);
   }, []);
 
+  const handleSaveClick = () => {
+    saveGame(); // First action: save the game
+    document.getElementById('saveButton').
+    console.log('Game saved!'); // Second action: log a message
+  };
+
   useEffect(() => {
     const handleDocumentClick = (event) => {
       const graySquares = document.querySelectorAll('.graySquare');
@@ -324,7 +340,6 @@ const PetScreen = ({ setCurrentPage }) => {
           square.classList.remove('opacity-0');
           square.classList.remove('invisible');
           square.classList.remove('disabled');
-
         });
         setAdditionalSquares([]); // Reset additional squares
       }
@@ -352,49 +367,42 @@ const PetScreen = ({ setCurrentPage }) => {
   }, [incrementAge, checkParam, addCoinByTimer]);
 
   return (
-    <div className="flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[90vw] h-[90vh] bg-[url('./assets/bg.jpg')]">
-      <div id="statusBar" className="w-[400px] h-[200px] flex ml-[1vw] items-center">
+    <div className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')]">
+      <img id='saveButton' src={save} onClick={handleSaveClick} className="absolute saveButton left-0 bottom-0 w-20 h-20"/>
+      <div id="statusBar" className="h-[220px] flex ml-[1vw] items-center">
         <div id="coinCounter" className="flex mr-[3vw]">
           <img className="w-[2vw] h-[3vh] mr-[0.5vw]" src={coin} alt="Coin" onClick={handleCoinClick} />
           <span>{coinCount}</span>
         </div>
-        <div id="happyBar" className="flex flex-row items-center">
-          Happiness:
-          <img className="w-auto h-auto" id="heart1" src={heartsFull} alt="Heart 1" />
-          <img className="w-auto h-auto" id="heart2" src={heartsFull} alt="Heart 2" />
-          <img className="w-auto h-auto" id="heart3" src={heartsFull} alt="Heart 3" />
-          <img className="w-auto h-auto" id="heart4" src={heartsFull} alt="Heart 4" />
-          <img className="w-auto h-auto" id="heart5" src={heartsFull} alt="Heart 5" />
-        </div>
+          <div id="happyBar" className="flex flex-row items-center">Happiness:
+            {hearts.map((heart, index) => (
+              <img key={index} className="happyImg w-auto h-auto" src={heart} alt={`Heart ${index + 1}`} />
+            ))}
       </div>
-      <img className="eggImg w-[100px] h-[100px] fixed" src={egg} alt="Egg" />
+      </div>
+      <img className="eggImg w-[100px] h-[100px] fixed bottom-17" src={egg} alt="Egg" />
       <div className="flex flex-row items-center justify-center" style={{ width: '400px', height: '77vh' }}>
         <div className="flex-row justify-around mx-[8vw]">
           <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('food')}>
             <img className="max-w-[90%] max-h-[90%] object-contain" src={food} alt="food" />
           </div>
           <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('clean')}>
-            <img className="max-w-[90%] max-h-[90%] object-contain" src={clean1} alt="Clean 1" />
+            <img className="max-w-[90%] max-h-[90%] object-contain" src={clean} alt="Clean 1" />
           </div>
-          <div id="happyBar">Happiness:
-            {hearts.map((heart, index) => (
-              <img key={index} className="happyImg" src={heart} alt={`Heart ${index + 1}`} />
-            ))}
           <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('info')}>
             <img className="max-w-[90%] max-h-[90%] object-contain" src={petInfo} alt="petinfo" />
           </div>
         </div>
         <div className="flex-row justify-around mx-[8vw]">
           <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('play')}>
-            <img className="max-w-[90%] max-h-[90%] object-contain" src={clean2} alt="Clean 2" />
+            <img className="max-w-[90%] max-h-[90%] object-contain" src={play} alt="play" />
           </div>
           <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('medicine')}>
             <img className="max-w-[90%] max-h-[90%] object-contain" src={medicane} alt="medicine" />
           </div>
-          <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('play')}>
+          <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('light')}>
             <img className="max-w-[90%] max-h-[90%] object-contain" src={light} alt="lightMode" />
           </div>
-          <button onClick={saveGame} className="saveButton">Save Game</button>
         </div>
       </div>
       <div className="fixed-container bottom-0vh left-0 right-0 flex flex-wrap justify-center gap-4 p-4">
@@ -410,18 +418,19 @@ const PetScreen = ({ setCurrentPage }) => {
               alt={`Additional ${square.id}`}
             />
           </div>
-        ))}
+        ))} 
       </div>
       <div id='petInfo' className="fixed bg-black/50 justify-center items-center p-10 hidden">
         <h2>Pet Information</h2>
         <p>Name: lily</p>
-        <p>Age: 22</p>
-        <p>Last Cleaned: 333</p>
-        <p>Last Fed: 222</p>
-        <p>Last Played: 3223</p>
-        <p>Last Medicine: 112</p>
+        <p>Age: {age}</p>
+        <p>Last Cleaned: {lastCleaned.toLocaleDateString()}</p>
+        <p>Last Fed: {lastFed.toLocaleDateString()}</p>
+        <p>Last Played: {lastPlayed.toLocaleDateString()}</p>
+        <p>Last Medicine: {lastMedicine.toLocaleDateString()} </p>
       </div>
     </div>
+  
   );
 };
 

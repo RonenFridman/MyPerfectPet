@@ -38,13 +38,13 @@ const MainMenu = ({ setCurrentPage }) => {
           <div className="flex flex-col items-center justify-center z-10">
             <button
               className="bg-[#e36588] hover:bg-[#cb958e] m-[1vh] text-medium sm:text-[1.5vw] w-[20vw] h-[8vh] cursor-pointer font-inherit whitespace-nowrap"
-              onClick={() => setCurrentPage('eggSelector')}
+              onClick={handleContinueGame}
             >
               Continue Game
             </button>
             <button
               className="bg-[#e36588] hover:bg-[#cb958e] m-[1vh] text-medium sm:text-[1.5vw] w-[20vw] h-[8vh] cursor-pointer font-inherit whitespace-nowrap"
-              onClick={() => setCurrentPage('home')}
+              onClick={handleNewGame}
             >
               New Game
             </button>
