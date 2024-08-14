@@ -164,9 +164,9 @@ const PetScreen = ({ setCurrentPage }) => {
         newHappiness -= 4;
         setIsCleaned(false);
     }
-    if ((currentTime - lastPlayed) / 6000 >= 0.6) {  // Reduce happiness if not played in last minute
+    if ((currentTime - lastPlayed) / 60000 >= 1) {  // Reduce happiness if not played in last minute
         console.log('Reducing happiness due to no play');
-        newHappiness -= 50;
+        newHappiness -= 2;
         setIsPlayed(false);
     }
     if ((currentTime - lastFed) / 60000 >= 5) {  // Reduce happiness if not fed in last 5 minutes
@@ -248,17 +248,17 @@ const PetScreen = ({ setCurrentPage }) => {
   
   const handleClickPlayBetter = useCallback(() => {
     console.log('Playing with pet...');
-    subCoinByActivity(4); 
+    subCoinByActivity(8); 
     setLastPlayed(new Date());  
-    addHappiness(10); 
+    addHappiness(8); 
     setIsPlayed(true);
   }, [subCoinByActivity, addHappiness]);
   
   const handleClickPlayWorst = useCallback(() => {
     console.log('Playing with pet...');
-    subCoinByActivity(2); 
+    subCoinByActivity(5); 
     setLastPlayed(new Date());  
-    addHappiness(5); 
+    addHappiness(7); 
     setIsPlayed(true);
   }, [subCoinByActivity, addHappiness]);
   
@@ -283,34 +283,34 @@ const PetScreen = ({ setCurrentPage }) => {
     if (buttonType === 'clean') {
       setAdditionalSquares(prevSquares => [
         ...prevSquares,
-        { id: prevSquares.length + 1, imgSrc: clean1, onClick: handleClickCleanBetter },
-        { id: prevSquares.length + 2, imgSrc: clean2, onClick: handleClickCleanWorst }
+        { id: prevSquares.length + 1, imgSrc: clean1, onClick: handleClickCleanBetter , cost: 2 , added_happiness: 4},
+        { id: prevSquares.length + 2, imgSrc: clean2, onClick: handleClickCleanWorst , cost: 4 , added_happiness: 8 }
       ]);
     } else if (buttonType === 'food') {
       setAdditionalSquares(prevSquares => [
         ...prevSquares,
-        { id: prevSquares.length + 1, imgSrc: food1, onClick: handleClickFoodBetter },
-        { id: prevSquares.length + 2, imgSrc: food2, onClick: handleClickFoodWorst },
-        { id: prevSquares.length + 3, imgSrc: food3, onClick: handleClickFoodWorst },
-        { id: prevSquares.length + 4, imgSrc: food4, onClick: handleClickFoodWorst }
+        { id: prevSquares.length + 1, imgSrc: food1, onClick: handleClickFoodBetter , cost: 4 , added_happiness: 8 },
+        { id: prevSquares.length + 2, imgSrc: food2, onClick: handleClickFoodWorst , cost: 1 , added_happiness: 2},
+        { id: prevSquares.length + 3, imgSrc: food3, onClick: handleClickFoodWorst , cost: 3 , added_happiness: 8},
+        { id: prevSquares.length + 4, imgSrc: food4, onClick: handleClickFoodWorst , cost: 3 , added_happiness: 6}
       ]);
     } else if (buttonType === 'play') {
       setAdditionalSquares(prevSquares => [
         ...prevSquares,
-        { id: prevSquares.length + 1, imgSrc: play1, onClick: handleClickPlayBetter },
-        { id: prevSquares.length + 2, imgSrc: play2, onClick: handleClickPlayWorst }
+        { id: prevSquares.length + 1, imgSrc: play1, onClick: handleClickPlayBetter , cost: 5 , added_happiness: 7 },
+        { id: prevSquares.length + 2, imgSrc: play2, onClick: handleClickPlayWorst , cost: 7 , added_happiness: 8}
       ]);
     } else if (buttonType === 'medicine') {
       setAdditionalSquares(prevSquares => [
         ...prevSquares,
-        { id: prevSquares.length + 1, imgSrc: medicine1, onClick: handleClickMedicineBetter },
-        { id: prevSquares.length + 2, imgSrc: medicine2, onClick: handleClickMedicineWorst }
+        { id: prevSquares.length + 1, imgSrc: medicine1, onClick: handleClickMedicineBetter , cost: 3 , added_happiness: 6 },
+        { id: prevSquares.length + 2, imgSrc: medicine2, onClick: handleClickMedicineWorst , cost: 4 , added_happiness: 8 }
       ]);
     } else if (buttonType === 'light') {
       setAdditionalSquares(prevSquares => [
       ...prevSquares,
-      { id: prevSquares.length + 1, imgSrc: light, onClick: handleAdditionalSquareClick },
-      { id: prevSquares.length + 2, imgSrc: dark, onClick: handleAdditionalSquareClick } 
+      { id: prevSquares.length + 1, imgSrc: light, onClick: handleAdditionalSquareClick  },
+      { id: prevSquares.length + 2, imgSrc: dark, onClick: handleAdditionalSquareClick  } 
     ]);
     }else if (buttonType === 'info') {
       setTimeout(() => {
@@ -379,7 +379,7 @@ const PetScreen = ({ setCurrentPage }) => {
       incrementAge();
       checkParam();
       addCoinByTimer();
-    }, 6000);
+    }, 60000);
 
     return () => clearInterval(timer);
   }, [incrementAge, checkParam, addCoinByTimer]);
@@ -445,6 +445,15 @@ const PetScreen = ({ setCurrentPage }) => {
 
       <div className="fixed-container bottom-0vh left-0 right-0 flex flex-wrap justify-center gap-4 p-4">
         {additionalSquares.map(square => (
+          <div>
+          <div className="w-[6vw] h-[6vw] flex flex-col items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 mx-[2vw] transition-opacity duration-500">
+          <img src={coin} alt="Coin" className="mb-2 h-8 w-8" /> {/* Image with margin-bottom */}
+          <span className="text-base text-white mb-1">{square.cost}</span> {/* Cost displayed below */}
+           <span className="text-sm text-white mb-1">happiness: +{square.added_happiness}</span> {/* Smaller and above the cost */}
+          
+        </div>
+
+
           <div
             key={square.id}
             className="w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 mx-[2vw] transition-opacity duration-500"
@@ -456,6 +465,8 @@ const PetScreen = ({ setCurrentPage }) => {
               alt={`Additional ${square.id}`}
             />
           </div>
+          </div>
+          
         ))} 
       </div>
       <div id='petInfo' className="fixed bg-black/50 justify-center items-center p-10 hidden">
