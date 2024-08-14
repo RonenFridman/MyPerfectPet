@@ -322,7 +322,12 @@ const PetScreen = ({ setCurrentPage }) => {
 
   const handleSaveClick = () => {
     saveGame(); // First action: save the game
-    document.getElementById('saveButton').
+    const saveButton = document.getElementById('saveButton');
+    saveButton.classList.add('animate-shake');
+
+    setTimeout(() => {
+      saveButton.classList.remove('animate-shake');
+    }, 1000);
     console.log('Game saved!'); // Second action: log a message
   };
 
