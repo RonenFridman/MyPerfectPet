@@ -1,6 +1,6 @@
 module.exports = {
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
-  darkMode: 'media', // Can be 'media', 'class', or false
+  purge: ['./src/**/*.{js,jsx,ts,tsx}'],
+  darkMode: 'class', // Can be 'media', 'class', or false
   theme: {
     extend: {
       keyframes: {
@@ -23,6 +23,10 @@ module.exports = {
       },
       fontFamily: {
         sans: ['"Press Start 2P"', 'cursive'], // Added fallback font 'cursive'
+      },
+      colors: {
+        customLightBlue: '#9ac4f8',
+        customDarkBlue: '#0e172c',
       },
     },
   },

@@ -9,6 +9,13 @@ const EggSelector = ({ setCurrentPage }) => {
         setSelectedEgg(id);
     };
 
+    const handleContinueClick = () => {
+        if (selectedEgg) {
+            localStorage.setItem('selectedEgg', selectedEgg);
+            setCurrentPage('nameSelector');
+        }
+    };
+
     return (
         <div className="flex flex-col items-center justify-center mt-[2vh]">
             <h1 className="text-[2vw] mt-[2vh] mb-[10vh] bg-[#cb958e]">
@@ -41,7 +48,7 @@ const EggSelector = ({ setCurrentPage }) => {
                 ))}
             </div>
             <button
-                onClick={() => setCurrentPage('nameSelector')}
+                onClick={handleContinueClick}
                 className={`fixed bg-[#cb958e] text-[2vw] bottom-[4vh] right-[10vw] border-2 border-black cursor-pointer w-[20vw] h-[8vh] font-inherit ${
                     selectedEgg ? 'block' : 'hidden'
                 }`}

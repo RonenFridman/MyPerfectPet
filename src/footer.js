@@ -35,6 +35,9 @@ const Footer = () => {
     }
   };
 
+  
+
+
   return (
     <div>
       <img

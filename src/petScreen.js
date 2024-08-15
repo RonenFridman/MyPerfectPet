@@ -11,7 +11,15 @@ import medicine from './assets/medicine.png';
 import light from './assets/lightMode.png';
 import dark from './assets/darkMode.png';
 import coin from './assets/coin.png';
-import egg from './assets/egg1.png';
+import egg1 from './assets/egg1.png';
+import egg2 from './assets/egg2.png';
+import egg3 from './assets/egg3.png';
+import egg4 from './assets/egg4.png';
+import egg5 from './assets/egg5.png';
+import egg6 from './assets/egg6.png';
+import pet1 from './assets/animals.png';
+import pet2 from './assets/animals1.png';
+import pet3 from './assets/pet3.png';
 import medicine1 from './assets/syringe.png';
 import medicine2 from './assets/medicine2.png';
 import food1 from './assets/food1.png';
@@ -22,6 +30,8 @@ import play from './assets/play.png';
 import play1 from './assets/play1.png';
 import play2 from './assets/play2.png';
 import save from './assets/save.png';
+
+
 
 // New icons for the indicators
 import boredicon from './assets/boredicon.png';
@@ -59,7 +69,8 @@ const PetScreen = ({ setCurrentPage }) => {
   const [lastFed, setLastFed] = useState(new Date()); 
   const [lastMedicine, setLastMedicine] = useState(new Date()); 
   const [hearts, setHearts] = useState([heartsFull, heartsFull, heartsFull, heartsFull, heartsFull]); 
-
+  const [eggImageSrc, setEggImageSrc] = useState(egg1);
+  const [petImageSrc, setPetImageSrc] = useState(pet1);
   const [isCleaned, setIsCleaned] = useState(true); 
   const [isPlayed, setIsPlayed] = useState(true); 
   const [isFed, setIsFed] = useState(true); 
@@ -109,6 +120,8 @@ const PetScreen = ({ setCurrentPage }) => {
     loadGame();
   }, [loadGame]);
 
+
+
   // Function to save the game state to localStorage
   const saveGame = useCallback(() => {
     const gameState = {
@@ -141,6 +154,19 @@ const PetScreen = ({ setCurrentPage }) => {
       }
     });
   }, []);
+
+
+  const handleLightClick = useCallback(() => {
+    console.log('Light mode enabled');
+    document.documentElement.classList.remove('dark');
+
+  }, []);
+  const handleDarkClick = useCallback(() => {
+    console.log('Dark mode enabled');
+    document.documentElement.classList.add('dark');
+ 
+  }, []);
+
 
   // Function to check happiness and handle game over scenario
   const checkHappiness = useCallback((newHappiness) => {
@@ -309,21 +335,17 @@ const PetScreen = ({ setCurrentPage }) => {
     } else if (buttonType === 'light') {
       setAdditionalSquares(prevSquares => [
       ...prevSquares,
-      { id: prevSquares.length + 1, imgSrc: light, onClick: handleAdditionalSquareClick  },
-      { id: prevSquares.length + 2, imgSrc: dark, onClick: handleAdditionalSquareClick  } 
+      { id: prevSquares.length + 1, imgSrc: light, onClick: handleLightClick },
+      { id: prevSquares.length + 2, imgSrc: dark, onClick: handleDarkClick } 
     ]);
     }else if (buttonType === 'info') {
       setTimeout(() => {
         document.getElementById('petInfo').classList.remove('hidden');
       }, 500);
     }
-  }, [handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
+  }, [handleDarkClick,handleLightClick,handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
     handleClickPlayBetter, handleClickPlayWorst, handleClickMedicineBetter, handleClickMedicineWorst]);
   
-  // Function to handle clicks on additional squares to remove them
-  const handleAdditionalSquareClick = useCallback(() => {
-    setAdditionalSquares([]);
-  }, []);
 
   // Function to handle clicking on the coin icon to add a coin
   const handleCoinClick = useCallback(() => {
@@ -375,6 +397,39 @@ const PetScreen = ({ setCurrentPage }) => {
 
   // Main interval to handle age, parameters, and coins
   useEffect(() => {
+    const savedEggId = localStorage.getItem('selectedEgg');
+
+    switch (savedEggId) {
+      case 'egg1':
+        setEggImageSrc(egg1);
+        setPetImageSrc(pet1);
+        break;
+      case 'egg2':
+        setEggImageSrc(egg2);
+        setPetImageSrc(pet1);
+        break;
+      case 'egg3':
+        setEggImageSrc(egg3);
+        setPetImageSrc(pet2);
+        break;
+      case 'egg4':
+        setEggImageSrc(egg4);
+        setPetImageSrc(pet2);
+        break;
+      case 'egg5':
+        setEggImageSrc(egg5);
+        setPetImageSrc(pet3);
+        break;
+      case 'egg6':
+        setEggImageSrc(egg6);
+        setPetImageSrc(pet3);
+        break;
+      default:
+        console.error('Invalid egg ID');
+        break;
+    }
+
+
     const timer = setInterval(() => {
       incrementAge();
       checkParam();
@@ -391,6 +446,7 @@ const PetScreen = ({ setCurrentPage }) => {
   }, [setCurrentPage]);
 
   return (
+    <div id='background' className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')] dark:bg-[url('./assets/darkbackground.png')] ">
     <div className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')]">
       
       {/* Indicator icons inside the background */}
@@ -416,7 +472,11 @@ const PetScreen = ({ setCurrentPage }) => {
             ))}
       </div>
       </div>
-      <img className="eggImg w-[100px] h-[100px] fixed bottom-17" src={egg} alt="Egg" />
+      {hatched === 0 ? (
+        <img className="eggImg w-[100px] h-[100px] fixed bottom-17" src={eggImageSrc} alt="Egg" />
+      ) : (
+        <img className="eggImg w-[100px] h-[100px] fixed bottom-17" src={pet1} alt="Hatched Egg" />
+      )}
       <div className="flex flex-row items-center justify-center" style={{ width: '400px', height: '77vh' }}>
         <div className="flex-row justify-around mx-[8vw]">
           <div className="graySquare w-[6vw] h-[6vw] bg-black/50 flex items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 cursor-pointer transition-opacity transition-transform duration-500 mt-[5vh]" onClick={() => handleGraySquareClick('food')}>
@@ -446,7 +506,7 @@ const PetScreen = ({ setCurrentPage }) => {
       <div className="fixed-container bottom-0vh left-0 right-0 flex flex-wrap justify-center gap-4 p-4">
         {additionalSquares.map(square => (
           <div>
-          <div className="w-[6vw] h-[6vw] flex flex-col items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 mx-[2vw] transition-opacity duration-500">
+          <div className="w-[6vw] h-[6vw] mb-3 flex flex-col items-center justify-center border-3 border-blue-500 rounded-lg opacity-100 transform scale-100 mx-[2vw] transition-opacity duration-500">
           <img src={coin} alt="Coin" className="mb-2 h-8 w-8" /> {/* Image with margin-bottom */}
           <span className="text-base text-white mb-1">{square.cost}</span> {/* Cost displayed below */}
            <span className="text-sm text-white mb-1">happiness: +{square.added_happiness}</span> {/* Smaller and above the cost */}
@@ -478,6 +538,7 @@ const PetScreen = ({ setCurrentPage }) => {
         <p>Last Played: {lastPlayed.toLocaleDateString()}</p>
         <p>Last Medicine: {lastMedicine.toLocaleDateString()} </p>
       </div>
+    </div>
     </div>
   );
 };

@@ -26,9 +26,10 @@ const Main = () => {
         return <MainMenu setCurrentPage={setCurrentPage} />;
     }
   };
-
+  
+  
   return (
-    <div class="flex justify-center items-center flex-col min-h-screen">
+    <div class="flex justify-center items-center flex-col min-h-screen bg-customLightBlue dark:bg-customDarkBlue">
       {renderPage()}
       <Footer />
     </div>
