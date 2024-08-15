@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import './nameSelector.css';
 import egg1 from './assets/egg1.png';
 import egg2 from './assets/egg2.png';
 import egg3 from './assets/egg3.png';
@@ -9,6 +8,7 @@ import egg6 from './assets/egg6.png';
 
 const NameSelector = ({ setCurrentPage }) => {
   const [eggImageSrc, setEggImageSrc] = useState(egg1);
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current index
 
   useEffect(() => {
     // Retrieve the selected egg ID from localStorage
@@ -42,19 +42,18 @@ const NameSelector = ({ setCurrentPage }) => {
 
     const handleKeyDown = (event) => {
       const key = event.key.toUpperCase();
-      const letters = document.querySelectorAll('.alphabet-letter');
       const nameDisplay = document.querySelectorAll('.name-display .letter');
-      let currentIndex = 0;
 
       if (key === 'BACKSPACE') {
         if (currentIndex > 0) {
-          currentIndex--;
-          nameDisplay[currentIndex].textContent = '_';
+          const newIndex = currentIndex - 1;
+          nameDisplay[newIndex].textContent = '_';
+          setCurrentIndex(newIndex);
         }
       } else if (/^[A-Z-]$/.test(key)) {
         if (currentIndex < nameDisplay.length) {
           nameDisplay[currentIndex].textContent = key;
-          currentIndex++;
+          setCurrentIndex(currentIndex + 1);
         }
       } else if (key === 'ENTER') {
         const confirmBtn = document.getElementById('confirmBtn');
@@ -72,7 +71,7 @@ const NameSelector = ({ setCurrentPage }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [currentIndex]); // Add currentIndex as a dependency
 
   const createAlphabetGrid = () => {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ-'.split('');
@@ -88,10 +87,9 @@ const NameSelector = ({ setCurrentPage }) => {
 
         letterElement.addEventListener('click', () => {
           const nameDisplay = document.querySelectorAll('.name-display .letter');
-          let currentIndex = 0;
           if (currentIndex < nameDisplay.length) {
             nameDisplay[currentIndex].textContent = letter;
-            currentIndex++;
+            setCurrentIndex(currentIndex + 1);
           }
         });
       });
