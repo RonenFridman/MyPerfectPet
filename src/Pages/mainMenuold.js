@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import './style.css';
 
-import titleImg from './assets/title3.png';
-import animalsImg from './assets/animals.png';
-import animals1Img from './assets/animals1.png';
+import titleImg from '../assets/title3.png';
+import animalsImg from '../assets/animals.png';
+import animals1Img from '../assets/animals1.png';
 
 const MainMenu = ({ setCurrentPage }) => {
   const [showPopup, setShowPopup] = useState(false); // State to control the popup visibility

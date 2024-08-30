@@ -1,20 +1,9 @@
-import React, { useState } from 'react';
-// import './eggSelectorStyle.css';
+// EggSelector.js
+import React from 'react';
+import useEggSelector from '../Logic/useEggSelector';
 
 const EggSelector = ({ setCurrentPage }) => {
-    const [selectedEgg, setSelectedEgg] = useState('');
-
-    const handleCheckboxChange = (event) => {
-        const { id } = event.target;
-        setSelectedEgg(id);
-    };
-
-    const handleContinueClick = () => {
-        if (selectedEgg) {
-            localStorage.setItem('selectedEgg', selectedEgg);
-            setCurrentPage('nameSelector');
-        }
-    };
+    const { selectedEgg, handleCheckboxChange, handleContinueClick } = useEggSelector(setCurrentPage);
 
     return (
         <div className="flex flex-col items-center justify-center mt-[2vh]">
@@ -37,11 +26,9 @@ const EggSelector = ({ setCurrentPage }) => {
                         />
                         <label htmlFor={egg} className="cursor-pointer">
                             <img
-                                src={require(`./assets/${egg}.png`)}
+                                src={require(`../assets/${egg}.png`)}
                                 alt={egg}
-                                className={`w-[108px] h-[126px]  ${
-                                    selectedEgg === egg ? 'animate-shake' : ''
-                                }`}
+                                className={`w-[108px] h-[126px] ${selectedEgg === egg ? 'animate-shake' : ''}`}
                             />
                         </label>
                     </div>

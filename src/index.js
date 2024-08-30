@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './style.css';
 //import './mainMenu.css';
-import MainMenu from './mainMenu';
+import MainMenu from './Pages/mainMenu';
 import Footer from './footer';
-import EggSelector from './EggSelector';
-import NameSelector from './nameSelector';
-import PetScreen from './petScreen';
-import reportWebVitals from './reportWebVitals';
-
+import EggSelector from './Pages/EggSelector';
+import NameSelector from './Pages/nameSelector';
+import PetScreen from './Pages/petScreen';
 const Main = () => {
   const [currentPage, setCurrentPage] = useState('mainMenu');
 
@@ -39,4 +37,3 @@ const Main = () => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<Main />);
 
-reportWebVitals();

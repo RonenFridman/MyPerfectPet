@@ -19,17 +19,17 @@ import egg5 from './assets/egg5.png';
 import egg6 from './assets/egg6.png';
 import pet1 from './assets/animals.png';
 import pet2 from './assets/animals1.png';
-import pet3 from './assets/pet3.png';
-import medicine1 from './assets/syringe.png';
-import medicine2 from './assets/medicine2.png';
-import food1 from './assets/food1.png';
-import food2 from './assets/food2.png';
-import food3 from './assets/food3.png';
-import food4 from './assets/food4.png';
-import play from './assets/play.png';
-import play1 from './assets/play1.png';
-import play2 from './assets/play2.png';
-import save from './assets/save.png';
+import pet3 from '../assets/pet3.png';
+import medicine1 from '../assets/syringe.png';
+import medicine2 from '../assets/medicine2.png';
+import food1 from '../assets/food1.png';
+import food2 from '../assets/food2.png';
+import food3 from '../assets/food3.png';
+import food4 from '../assets/food4.png';
+import play from '../assets/play.png';
+import play1 from '../assets/play1.png';
+import play2 from '../assets/play2.png';
+import save from '../assets/save.png';
 
 
 
@@ -446,8 +446,8 @@ const PetScreen = ({ setCurrentPage }) => {
   }, [setCurrentPage]);
 
   return (
-    <div id='background' className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')] dark:bg-[url('./assets/darkbackground.png')] ">
-    <div className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('./assets/lightbackground.png')]">
+    <div id='background' className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('/src/assets/darkbackground.png')] dark:bg-[url('/src/assets/darkbackground.png')] ">
+    <div className="relative flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain text-center w-[70vw] h-[90vh] bg-[url('/src/assets/darkbackground.png')] dark:bg-[url('/src/assets/darkbackground.png')]">
       
       {/* Indicator icons inside the background */}
       <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex flex-col items-center space-y-2 mr-4">

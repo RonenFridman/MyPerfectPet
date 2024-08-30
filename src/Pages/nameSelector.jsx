@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import egg1 from './assets/egg1.png';
-import egg2 from './assets/egg2.png';
-import egg3 from './assets/egg3.png';
-import egg4 from './assets/egg4.png';
-import egg5 from './assets/egg5.png';
-import egg6 from './assets/egg6.png';
+import egg1 from '../assets/egg1.png';
+import egg2 from '../assets/egg2.png';
+import egg3 from '../assets/egg3.png';
+import egg4 from '../assets/egg4.png';
+import egg5 from '../assets/egg5.png';
+import egg6 from '../assets/egg6.png';
 
 const NameSelector = ({ setCurrentPage }) => {
   const [eggImageSrc, setEggImageSrc] = useState(egg1);
