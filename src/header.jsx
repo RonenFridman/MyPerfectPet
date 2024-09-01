@@ -13,7 +13,7 @@ const Header = ({ setCurrentPage }) => {
         <img
           src={logo}
           alt="Logo"
-          className="w-[5vw] cursor-pointer transform transition-transform duration-200 hover:scale-110 "
+          className="w-[20vw] sm:w-[5vw] cursor-pointer transform transition-transform duration-200 hover:scale-110 "
           onClick={() => setCurrentPage('mainMenu')}
         />
       </div>
@@ -21,7 +21,7 @@ const Header = ({ setCurrentPage }) => {
       <img
         src={light}// Replace with the actual path to your image
         alt="Dark Mode"
-        className="lightButton w-[4vw] cursor-pointer transform transition-transform duration-200 hover:scale-110"
+        className="lightButton w-[14vw] sm:w-[4vw] cursor-pointer transform transition-transform duration-200 hover:scale-110"
         onClick={handleLightClick}
       />
     </div>

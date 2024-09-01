@@ -11,7 +11,7 @@ import useDarkMode from './useDarkMode';
 export const usePetScreenLogic = (setCurrentPage) => {
   // State declarations    // State declarations for various game properties
     const [additionalSquares, setAdditionalSquares] = useState([]); 
-    const [coinCount, setCoinCount] = useState(0); 
+    const [coinCount, setCoinCount] = useState(10); 
     const [happiness, setHappiness] = useState(100); 
     const [age, setAge] = useState(0); 
     const [hatched, setHatched] = useState(0); 
@@ -163,7 +163,7 @@ export const usePetScreenLogic = (setCurrentPage) => {
         const newAge = prevAge + 1; 
         if (newAge >= 120) {
           console.log('Your pet has died of old age.');
-        } else if (newAge === 18) {
+        } else if (newAge === 1) {
           setHatched(1); 
           console.log('Your egg has hatched!');
         } else {
