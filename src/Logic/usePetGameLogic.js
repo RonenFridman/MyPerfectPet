@@ -163,7 +163,7 @@ export const usePetScreenLogic = (setCurrentPage) => {
         const newAge = prevAge + 1; 
         if (newAge >= 120) {
           console.log('Your pet has died of old age.');
-        } else if (newAge === 1) {
+        } else if (newAge === 3) {
           setHatched(1); 
           console.log('Your egg has hatched!');
         } else {
