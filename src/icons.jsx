@@ -34,10 +34,13 @@ import boredicon from './assets/boredicon.png';
 import hungericon from './assets/hungericon.png';
 import dirtyicon from './assets/dirtyicon.png';
 import sickicon from './assets/sickicon.png';
+import coinSound from './assets/coinSound.mp3';
+import gameoverSound from './assets/gameOver.mp3';
+import logo from './assets/title3.png';
 
 export {
     heartsFull, heartsHalf, heartsEmpty, clean, clean1, clean2, food, petInfo, medicine,
     light, dark, coin, egg1, egg2, egg3, egg4, egg5, egg6, pet1, pet2, pet3,
     medicine1, medicine2, food1, food2, food3, food4, play, play1, play2, save,
-    boredicon, hungericon, dirtyicon, sickicon
+    boredicon, hungericon, dirtyicon, sickicon, coinSound ,gameoverSound, logo
 };

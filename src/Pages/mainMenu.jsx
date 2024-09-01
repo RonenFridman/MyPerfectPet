@@ -1,4 +1,3 @@
-// MainMenu.js
 import React from 'react';
 import useMainMenu from '../Logic/useMainMenu';
 
@@ -13,24 +12,24 @@ const MainMenu = ({ setCurrentPage }) => {
         <div className="flex justify-center items-center flex-col w-full h-full fixed">
             <div>
                 <div className="relative flex justify-center w-full">
-                    <img className="w-[40vw] h-[70vh]" src={titleImg} alt="My Image" />
+                    <img className="w-[80vw] sm:w-[40vw] h-auto" src={titleImg} alt="Title" />
                 </div>
                 <div className="relative w-full flex justify-center items-center">
                     <img
                         id="petImg1"
-                        className="w-[24vw] sm:w-auto h-auto absolute left-[-10%] bottom-0 animate-bounce"
+                        className="w-[24vw] sm:w-[12vw] h-auto absolute left-[-10%] bottom-0 animate-bounce"
                         src={animals1Img}
-                        alt="My Image"
+                        alt="Animal 1"
                     />
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center mb-8">
                         <button
-                            className="bg-[#e36588] hover:bg-[#cb958e] dark:bg-[#BE234F] dark:hover:bg-[#A8584D] m-[1vh] text-medium sm:text-[1.5vw] w-[20vw] h-[8vh] cursor-pointer font-inherit whitespace-nowrap"
+                            className="bg-[#e36588] hover:bg-[#cb958e] dark:bg-[#BE234F] dark:hover:bg-[#A8584D] m-[1vh] text-medium text-[3vw] sm:text-[1.5vw] w-[40vw] sm:w-[20vw] h-[8vh] sm:h-[6vh] cursor-pointer font-inherit whitespace-nowrap"
                             onClick={handleContinueGame}
                         >
                             Continue Game
                         </button>
                         <button
-                            className="bg-[#e36588] hover:bg-[#cb958e] dark:bg-[#BE234F] dark:hover:bg-[#A8584D] m-[1vh] text-medium sm:text-[1.5vw] w-[20vw] h-[8vh] cursor-pointer font-inherit whitespace-nowrap"
+                            className="bg-[#e36588] hover:bg-[#cb958e] dark:bg-[#BE234F] dark:hover:bg-[#A8584D] m-[1vh] text-medium text-[3vw] sm:text-[1.5vw] w-[40vw] sm:w-[20vw] h-[8vh] sm:h-[6vh] cursor-pointer font-inherit whitespace-nowrap"
                             onClick={handleNewGame}
                         >
                             New Game
@@ -38,9 +37,9 @@ const MainMenu = ({ setCurrentPage }) => {
                     </div>
                     <img
                         id="petImg2"
-                        className="w-[24vw] sm:w-auto h-auto absolute right-[-10%] bottom-0 animate-bounce"
+                        className="w-[24vw] sm:w-[12vw] h-auto absolute right-[-10%] bottom-0 animate-bounce"
                         src={animalsImg}
-                        alt="My Image"
+                        alt="Animal 2"
                     />
                 </div>
             </div>

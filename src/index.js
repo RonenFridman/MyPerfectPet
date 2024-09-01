@@ -4,9 +4,11 @@ import './style.css';
 //import './mainMenu.css';
 import MainMenu from './Pages/mainMenu';
 import Footer from './footer';
+import Header from './header';
 import EggSelector from './Pages/EggSelector';
 import NameSelector from './Pages/nameSelector';
 import PetScreen from './Pages/petScreen';
+
 const Main = () => {
   const [currentPage, setCurrentPage] = useState('mainMenu');
 
@@ -24,10 +26,10 @@ const Main = () => {
         return <MainMenu setCurrentPage={setCurrentPage} />;
     }
   };
-  
-  
+
   return (
-    <div class="flex justify-center items-center flex-col min-h-screen bg-customLightBlue dark:bg-customDarkBlue">
+    <div className="flex justify-center items-center flex-col min-h-screen bg-customLightBlue dark:bg-customDarkBlue">
+      <Header setCurrentPage={setCurrentPage} />
       {renderPage()}
       <Footer />
     </div>
@@ -36,4 +38,3 @@ const Main = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<Main />);
-

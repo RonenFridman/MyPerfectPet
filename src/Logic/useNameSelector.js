@@ -16,7 +16,7 @@ const eggImages = {
   egg6
 };
 
-const useNameSelector = () => {
+const useNameSelector = (setCurrentPage) => {
   const [eggImageSrc, setEggImageSrc] = useState(egg1);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -63,7 +63,7 @@ const useNameSelector = () => {
       alphabet.forEach((letter) => {
         const letterElement = document.createElement('div');
         letterElement.className =
-          'alphabet-letter text-2xl m-[0_5px] p-2 border-2 border-black bg-[#e36588] hover:bg-[#cb958e] dark:bg-[#BE234F] dark:hover:bg-[#A8584D]';
+          'alphabet-letter text-[4vw] sm:text-2xl m-[0.5vw] sm:m-[0_5px] p-1 border-2 border-black bg-[#e36588] hover:bg-[#cb958e] dark:bg-[#BE234F] dark:hover:bg-[#A8584D] text-center flex items-center justify-center';
         letterElement.textContent = letter;
         gridContainer.appendChild(letterElement);
 
@@ -76,9 +76,37 @@ const useNameSelector = () => {
         });
       });
     }
+
+    const deleteBtn = document.getElementById('deleteBtn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', () => {
+        const nameDisplay = document.querySelectorAll('.name-display .letter');
+        if (currentIndex > 0) {
+          const newIndex = currentIndex - 1;
+          nameDisplay[newIndex].textContent = '_';
+          setCurrentIndex(newIndex);
+        }
+      });
+    }
   };
 
-  return { eggImageSrc, createAlphabetGrid, setCurrentPage: () => {} };
+  const handleContinueClick = () => {
+    const nameDisplay = document.querySelectorAll('.name-display .letter');
+    const name = Array.from(nameDisplay)
+      .map((letter) => letter.textContent)
+      .join('')
+      .replace(/_/g, ''); // Replace underscores with empty strings
+  
+    if (name.trim() === '') {
+      alert('Please fill in all the blanks');
+    } else {
+      localStorage.setItem('petName', name);
+      setCurrentPage('petScreen');
+      console.log('Name selected:', name);
+    }
+  };
+
+  return { eggImageSrc, createAlphabetGrid, handleContinueClick };
 };
 
 export default useNameSelector;

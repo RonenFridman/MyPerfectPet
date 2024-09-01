@@ -4,8 +4,9 @@ import {
     food, petInfo, medicine, light, dark, coin, egg1, egg2, egg3,
     egg4, egg5, egg6, pet1, pet2, pet3, medicine1, medicine2,
     food1, food2, food3, food4, play, play1, play2, save,
-    boredicon, hungericon, dirtyicon, sickicon
+    boredicon, hungericon, dirtyicon, sickicon , coinSound, gameoverSound
   } from '../icons'; 
+import useDarkMode from './useDarkMode';
 
 export const usePetScreenLogic = (setCurrentPage) => {
   // State declarations    // State declarations for various game properties
@@ -25,7 +26,6 @@ export const usePetScreenLogic = (setCurrentPage) => {
     const [isPlayed, setIsPlayed] = useState(true); 
     const [isFed, setIsFed] = useState(true); 
     const [isGivenMedicine, setIsGivenMedicine] = useState(true); 
-  
     // New state to control the visibility of the Game Over popup
     const [showGameOver, setShowGameOver] = useState(false); 
   
@@ -90,7 +90,9 @@ export const usePetScreenLogic = (setCurrentPage) => {
   
     // Function to add coins based on a timer, with more coins if happiness is above 50
     const addCoinByTimer = useCallback(() => {
-      setCoinCount(prevCount => prevCount + (happiness > 50 ? 15 : 10));
+      setCoinCount(prevCount => prevCount + (happiness > 50 ? 6 : 3));
+      const coinSoundAudio = new Audio(coinSound);
+      coinSoundAudio.play();
     }, [happiness]);
   
     // Function to subtract coins based on activity cost
@@ -106,22 +108,16 @@ export const usePetScreenLogic = (setCurrentPage) => {
     }, []);
   
   
-    const handleLightClick = useCallback(() => {
-      console.log('Light mode enabled');
-      document.documentElement.classList.remove('dark');
-  
-    }, []);
-    const handleDarkClick = useCallback(() => {
-      console.log('Dark mode enabled');
-      document.documentElement.classList.add('dark');
-   
-    }, []);
+    const { handleLightClick } = useDarkMode();
+
   
   
     // Function to check happiness and handle game over scenario
     const checkHappiness = useCallback((newHappiness) => {
       if (newHappiness <= 0) {
         console.log(`GAME OVER`);
+        const gameoverSoundAudio = new Audio(gameoverSound);
+        gameoverSoundAudio.play();
         setShowGameOver(true); // Show the game over popup
       } else {
         console.log(`Happiness is now: ${newHappiness}`);
@@ -254,8 +250,50 @@ export const usePetScreenLogic = (setCurrentPage) => {
       setIsGivenMedicine(true);
     }, [subCoinByActivity, addHappiness]);
   
+    // Effect to handle clicks on the document and adjust UI accordingly
+    // Function to handle document click
+    const handleDocumentClick = (event) => {
+
+      const graySquares = document.querySelectorAll('.graySquare');
+      if (event.target.classList.contains('graySquare') || event.target.closest('.graySquare')) {
+        graySquares.forEach(square => {
+          // square.classList.add('opacity-0');
+          
+          square.classList.add('animate-fadeOut');
+          setTimeout(() => {
+            square.classList.add('invisible');
+            square.classList.add('disabled');
+          }, 600);
+        });
+      } else {
+        graySquares.forEach(square => {
+          // square.classList.remove('opacity-0');
+          square.classList.remove('animate-fadeOut');
+          square.classList.remove('invisible');
+          square.classList.remove('disabled');
+        });
+        setAdditionalSquares([]);
+      }
+      const petInfoElement = document.getElementById('petInfo');
+      if (petInfoElement && !petInfoElement.classList.contains('hidden')) {
+        petInfoElement.classList.add('hidden');
+      }
+    };
+
+    // Effect to handle clicks on the document and adjust UI accordingly
+    useEffect(() => {
+      document.addEventListener('click', handleDocumentClick);
+
+      return () => {
+        document.removeEventListener('click', handleDocumentClick);
+      };
+    }, []);
+
     // Function to handle clicks on the gray squares to show additional options
     const handleGraySquareClick = useCallback((buttonType) => {
+      setTimeout(() => {
+        
+      
       if (buttonType === 'clean') {
         setAdditionalSquares(prevSquares => [
           ...prevSquares,
@@ -283,18 +321,20 @@ export const usePetScreenLogic = (setCurrentPage) => {
           { id: prevSquares.length + 2, imgSrc: medicine2, onClick: handleClickMedicineWorst , cost: 4 , added_happiness: 8 }
         ]);
       } else if (buttonType === 'light') {
-        setAdditionalSquares(prevSquares => [
-        ...prevSquares,
-        { id: prevSquares.length + 1, imgSrc: light, onClick: handleLightClick },
-        { id: prevSquares.length + 2, imgSrc: dark, onClick: handleDarkClick } 
-      ]);
+        handleLightClick();
+        setTimeout(() => {
+          const syntheticEvent = new CustomEvent('click', { bubbles: true, cancelable: true });
+          document.documentElement.dispatchEvent(syntheticEvent);
+        }, 0);
+        
       }else if (buttonType === 'info') {
         setTimeout(() => {
           document.getElementById('petInfo').classList.remove('hidden');
         }, 500);
       }
-    }, [handleDarkClick,handleLightClick,handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
-      handleClickPlayBetter, handleClickPlayWorst, handleClickMedicineBetter, handleClickMedicineWorst]);
+    }, 700);
+    }, [handleLightClick,handleClickCleanBetter, handleClickCleanWorst, handleClickFoodBetter, handleClickFoodWorst, 
+      handleClickPlayBetter, handleClickPlayWorst, handleClickMedicineBetter, handleClickMedicineWorst ]);
     
   
     // Function to handle clicking on the coin icon to add a coin
@@ -314,36 +354,7 @@ export const usePetScreenLogic = (setCurrentPage) => {
       console.log('Game saved!'); 
     };
   
-    // Effect to handle clicks on the document and adjust UI accordingly
-    useEffect(() => {
-      const handleDocumentClick = (event) => {
-        const graySquares = document.querySelectorAll('.graySquare');
-        if (event.target.classList.contains('graySquare') || event.target.closest('.graySquare')) {
-          graySquares.forEach(square => {
-            square.classList.add('opacity-0');
-            square.classList.add('invisible');
-            square.classList.add('disabled');
-          });
-        } else {
-          graySquares.forEach(square => {
-            square.classList.remove('opacity-0');
-            square.classList.remove('invisible');
-            square.classList.remove('disabled');
-          });
-          setAdditionalSquares([]); 
-        }
-        const petInfoElement = document.getElementById('petInfo');
-        if (petInfoElement && !petInfoElement.classList.contains('hidden')) {
-          petInfoElement.classList.add('hidden');
-        }
-      };
-  
-      document.addEventListener('click', handleDocumentClick);
-  
-      return () => {
-        document.removeEventListener('click', handleDocumentClick);
-      };
-    }, []);
+
   
     // Main interval to handle age, parameters, and coins
     useEffect(() => {
